@@ -11,9 +11,9 @@ crc_code = crc.CyclicRedundancyCheck()
 repetition = repetition_code.RepetitionCode()
 
 # poniższe parametry zmieniamy, aby wyszły rózne wyniki
-data_size = 12800
-packets_size = 128
-error_probability = 0.005
+data_size = 100
+packets_size = 31  #max 31
+error_probability = 0.01
 
 bsc = komm.BinarySymmetricChannel(error_probability)
 
@@ -44,7 +44,6 @@ def test(packets: np.ndarray, code_type):
 
 
         for packet in packets:
-
             if code_type == 1:
                 encoded_packet = crc_code.encode(packet)
             if code_type == 2:
