@@ -1,44 +1,35 @@
 import numpy as np
-from numpy import random
+
 
 class CyclicRedundancyCheck:
     def __init__(self):
-        self.__polynomial = np.array([1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1])
+        self.__polynomial = np.array(
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1])
         self.__number_of_bits = 32
+
+    def divide(self, array: np.ndarray) -> np.ndarray:
+        tmp = array.copy()
+        for i in range(tmp.size - self.__number_of_bits):
+            index = 0
+            if tmp[i] == 0:
+                continue
+
+            for j in range(i, i + self.__number_of_bits + 1):
+                tmp[j] = tmp[j] ^ self.__polynomial[index]
+                index += 1
+        return tmp
 
     def encode(self, array: np.ndarray) -> np.ndarray:
         data_array = np.append(array, np.full(self.__number_of_bits, 0))
-        help_val = np.array(2 ** (np.array(np.arange(data_array.size)[::-1], dtype=np.int64)), dtype=np.int64)
-        integer_value_of_array = data_array.dot(help_val)
-        divisor = np.append(self.__polynomial, np.full(data_array.size - self.__polynomial.size, 0))
-        help_div = np.array(2 ** (np.array(np.arange(divisor.size)[::-1], dtype=np.int64)), dtype=np.int64)
-        integer_value_of_divisor = divisor.dot(help_div)
-
-        while integer_value_of_array > (2 ** self.__number_of_bits - 1):
-            if integer_value_of_divisor <= ((2 ** (np.floor(np.log2(integer_value_of_array)) + 1)) - 1):
-                integer_value_of_array = integer_value_of_array ^ integer_value_of_divisor
-            integer_value_of_divisor = integer_value_of_divisor >> 1
-
-        help1 = np.binary_repr(integer_value_of_array).zfill(self.__number_of_bits)
-        crc_code = np.fromstring(help1,
-                                 dtype='S1').astype(int)
-
+        tmp = self.divide(data_array)
+        crc_code = tmp[(self.__number_of_bits * -1):]
         return np.append(array, crc_code)
 
     def check(self, array: np.ndarray) -> bool:
         if array.size > self.__number_of_bits:
-            help_val = np.array(2 ** (np.array(np.arange(array.size)[::-1], dtype=np.int64)), dtype=np.int64)
-            integer_value_of_array = (array.dot(help_val))
-            divisor = np.append(self.__polynomial, np.full(array.size - self.__polynomial.size, 0))
-            help_div = np.array(2 ** (np.array(np.arange(divisor.size)[::-1], dtype=np.int64)), dtype=np.int64)
-            integer_value_of_divisor = divisor.dot(help_div)
+            tmp = self.divide(array)
 
-            while integer_value_of_array > (2 ** self.__number_of_bits - 1):
-                if integer_value_of_divisor <= ((2 ** (np.floor(np.log2(integer_value_of_array)) + 1)) - 1):
-                    integer_value_of_array = integer_value_of_array ^ integer_value_of_divisor
-                integer_value_of_divisor = integer_value_of_divisor >> 1
-
-            if integer_value_of_array == 0:
+            if np.array_equal(tmp, np.full(tmp.size, 0)):
                 return True
             else:
                 return False

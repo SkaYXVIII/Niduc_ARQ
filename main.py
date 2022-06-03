@@ -11,9 +11,9 @@ crc_code = crc.CyclicRedundancyCheck()
 repetition = repetition_code.RepetitionCode()
 
 # poniższe parametry zmieniamy, aby wyszły rózne wyniki
-data_size = 100
-packets_size = 31  #max 31
-error_probability = 0.01
+data_size = 64_000
+packets_size = 64  #max 31
+error_probability = 0.005
 
 bsc = komm.BinarySymmetricChannel(error_probability)
 
