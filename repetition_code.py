@@ -23,8 +23,7 @@ class RepetitionCode:
         for arr in array:
             if not np.array_equal(var, arr):
                 errors += 1
-
-        if (len(array) - 1) == errors:
+        if (len(array) - 1) == errors and not np.array_equal(array[1], array[2]):
             self.__shouldRepeat = True
         else:
             self.__shouldRepeat = False
