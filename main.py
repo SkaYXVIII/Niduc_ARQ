@@ -11,9 +11,11 @@ crc_code = crc.CyclicRedundancyCheck()
 repetition = repetition_code.RepetitionCode()
 
 # poniższe parametry zmieniamy, aby wyszły rózne wyniki
-data_size = 10000
-packets_size = 100
-error_probability = 0.001
+data_size = 12800
+packets_size = 128
+error_probability = 0.005
+
+bsc = komm.BinarySymmetricChannel(error_probability)
 
 
 def restart_counters():
@@ -40,8 +42,8 @@ def test(packets: np.ndarray, code_type):
         unchanged_packets = 0
         array = []
 
+
         for packet in packets:
-            bsc = komm.BinarySymmetricChannel(error_probability)
 
             if code_type == 1:
                 encoded_packet = crc_code.encode(packet)
@@ -51,7 +53,6 @@ def test(packets: np.ndarray, code_type):
                 encoded_packet = repetition.encode(packet)
 
             packet_after_noise = bsc(encoded_packet)
-
 
             if code_type == 1:
                 if crc_code.check(packet_after_noise):
