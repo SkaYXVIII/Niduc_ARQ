@@ -8,6 +8,7 @@ import komm
 
 resending_counter = 0
 errors_not_detected = 0
+errors_detected = 0
 crc_code = crc.CyclicRedundancyCheck()
 repetition = repetition_code.RepetitionCode()
 
@@ -22,8 +23,10 @@ bsc = komm.BinarySymmetricChannel(error_probability)
 def restart_counters():
     global resending_counter
     global errors_not_detected
+    global errors_detected
     resending_counter = 0
     errors_not_detected = 0
+    errors_detected = 0
 
 
 def split_into_packets(array: np.ndarray) -> np.ndarray:
@@ -33,15 +36,9 @@ def split_into_packets(array: np.ndarray) -> np.ndarray:
 
 def test(packets: np.ndarray, code_type):
     if code_type == 1 or code_type == 2 or code_type == 3:
-        if code_type == 1:
-            print("CRC32: ")
-        if code_type == 2:
-            print("Parity: ")
-        if code_type == 3:
-            print("Repetition: ")
         global resending_counter
         global errors_not_detected
-        errors_detected = 0
+        global errors_detected
         unchanged_packets = 0
         array = []
 
@@ -87,14 +84,14 @@ def test(packets: np.ndarray, code_type):
                     if repetition.should_repeat():
                         array.append(packet)
 
-        print("Pomyslnie przeslane pakiety", unchanged_packets)
-        print("Wykryte bledy", errors_detected)
-        print()
+        # print("Pomyslnie przeslane pakiety", unchanged_packets)
+        # print("Wykryte bledy", errors_detected)
+        # print()
 
         if len(array) > 0:
             resending_counter += 1
-            print("Ponowne przesyłanie pakietów")
-            print()
+            # print("Ponowne przesyłanie pakietów")
+            # print()
             test(np.array(array), code_type)
 
 
@@ -108,13 +105,16 @@ if __name__ == '__main__':
     test_array = random.randint(2, size=data_size)
     test_packets = split_into_packets(test_array)
     test(test_packets, 1)
-    print("Ile razy ponownie przesyłano pakiety CRC: ", resending_counter)
-    print("Ile razy blad nie zostal wykryty CRC: ", errors_not_detected)
+    print("Ilosc ponownych przeslan CRC: ", resending_counter)
+    print("Niewykryte bledy CRC: ", errors_not_detected)
+    print("Wszystkie bledy CRC: ", errors_not_detected + errors_detected)
     clear_console()
     test(test_packets, 2)
-    print("Ile razy ponownie przesyłano pakiety Parzystość: ", resending_counter)
-    print("Ile razy blad nie zostal wykryty Parzystosc: ", errors_not_detected)
+    print("Ilosc ponownych przeslan Parzystość: ", resending_counter)
+    print("Niewykryte bledy Parzystosc: ", errors_not_detected)
+    print("Wszystkie bledy Parzystosc: ", errors_not_detected + errors_detected)
     clear_console()
     test(test_packets, 3)
-    print("Ile razy ponownie przesyłano pakiety kod dublowania: ", resending_counter)
-    print("Ile razy blad nie zostal wykyty kod dublowania: ", errors_not_detected)
+    print("Ilosc ponownych przeslany kod dublowania: ", resending_counter)
+    print("Niewykryte bledy kod dublowania: ", errors_not_detected)
+    print("Wszystkie bledy kod dublowania: ", errors_not_detected + errors_detected)

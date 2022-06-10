@@ -20,13 +20,16 @@ class RepetitionCode:
         array = self.separate_packets(array)
         errors = 0
         var = array[0]
+
         for arr in array:
             if not np.array_equal(var, arr):
                 errors += 1
+
         if (len(array) - 1) == errors and not np.array_equal(array[1], array[2]):
             self.__shouldRepeat = True
         else:
             self.__shouldRepeat = False
+
         if errors >= 1:
             return False
         return True
