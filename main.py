@@ -42,7 +42,6 @@ def test(packets: np.ndarray, code_type):
         unchanged_packets = 0
         array = []
 
-
         for packet in packets:
             if code_type == 1:
                 encoded_packet = crc_code.encode(packet)
@@ -81,8 +80,7 @@ def test(packets: np.ndarray, code_type):
                         errors_not_detected += 1
                 else:
                     errors_detected += 1
-                    if repetition.should_repeat():
-                        array.append(packet)
+                    array.append(packet)
 
         # print("Pomyslnie przeslane pakiety", unchanged_packets)
         # print("Wykryte bledy", errors_detected)
@@ -105,16 +103,16 @@ if __name__ == '__main__':
     test_array = random.randint(2, size=data_size)
     test_packets = split_into_packets(test_array)
     test(test_packets, 1)
-    print("Ilosc ponownych przeslan CRC: ", resending_counter)
+    print("Ilosc ponownych przeslan CRC: ", errors_detected)
     print("Niewykryte bledy CRC: ", errors_not_detected)
     print("Wszystkie bledy CRC: ", errors_not_detected + errors_detected)
     clear_console()
     test(test_packets, 2)
-    print("Ilosc ponownych przeslan Parzystość: ", resending_counter)
+    print("Ilosc ponownych przeslan Parzystość: ", errors_detected)
     print("Niewykryte bledy Parzystosc: ", errors_not_detected)
     print("Wszystkie bledy Parzystosc: ", errors_not_detected + errors_detected)
     clear_console()
     test(test_packets, 3)
-    print("Ilosc ponownych przeslany kod dublowania: ", resending_counter)
+    print("Ilosc ponownych przeslany pakietow kod dublowania: ", errors_detected)
     print("Niewykryte bledy kod dublowania: ", errors_not_detected)
     print("Wszystkie bledy kod dublowania: ", errors_not_detected + errors_detected)
